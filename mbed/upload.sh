@@ -1,0 +1,1 @@
+mbed compile -t GCC_ARM -m NUCLEO_F446RE --source ../SerialTwoWay_Interrupt --source ../mbed-os --build ../BUILD/SerialTwoWay_Interrupt ; cp -f ../BUILD/SerialTwoWay_Interrupt/SerialTwoWay_Interrupt.bin /media/reyes/NODE_F446RE*
