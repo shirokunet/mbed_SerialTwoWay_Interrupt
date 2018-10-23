@@ -5,8 +5,9 @@
 #include "serial.h"
 #include "unistd.h"
 
+
 #define device "/dev/ttyACM0"
-#define data_size 2
+#define data_size 3
 
 serial_t serial;
 

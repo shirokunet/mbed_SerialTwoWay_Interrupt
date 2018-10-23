@@ -1,40 +1,47 @@
 #include "serial.h"
 
-bool SerialTW::read(int data_rx[])
-{
-    char value[100][100];
-    int index[100]={0};
-    char ch;
-    
-    int num = -1;
-    bool read_flag = false;
-    do
-    { 
-        if (_pc->readable())
-        {
-            ch = _pc->getc();
-            if (ch == 's')
-                read_flag = true;
-            else if (ch == ','){
-                num ++;
-            }
-            else if (index[num]<100 && read_flag)
-                value[num][index[num]++] = ch;
-        }
-    } while (ch!='\n');
+bool SerialTW::read(char ch, int data_rx[])
+{   
+    static char _value[_data_rx_size][10];
+    static int _index[10] = {0};
+    static bool read_flag = false;
+    static int num = -1;
 
-    /* char to int */
-    for (int i = 0; i < _data_rx_size; ++i)
+    /* store */
+    if (ch == '\r')
     {
-        value[i][index[i]]='\x0';   // add un 0 to end the c string 
-        data_rx[i] = atoi(value[i]);
+        /* char to int */
+        for (int i = 0; i < _data_rx_size; ++i)
+        {
+            _value[i][_index[i]]='\x0';   // add un 0 to end the c string 
+            data_rx[i] = atoi(_value[i]);
+        }
+
+        /* reset */
+        read_flag = false;
+        num = -1;
+        for (int i = 0; i < 10; ++i)
+        {
+            _index[i] = 0;
+        }
+
+        return true;
+    }
+    else if (ch == 's')
+    {
+        read_flag = true;
+    }
+    else if (ch == ',')
+    {
+        num ++;
+    }
+    else if (_index[num]<10-1 && read_flag)
+    {
+        _value[num][_index[num]++] = ch;
     }
 
-    if (read_flag)
-        return true;
-    else
-        return false;
-} 
+    return false;
+}
 
 void SerialTW::write(int data_tx[])
 {
