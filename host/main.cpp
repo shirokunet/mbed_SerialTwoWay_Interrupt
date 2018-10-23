@@ -39,13 +39,16 @@ bool read(int data_rx[], int timeout_ms=10)
     for (int i = 0; i < data_size_rx+1; ++i)
     {
         if (i == 0)
-            tp[i] = strtok(c, ",");     // get s
+        {
+            tp[i] = strtok(c, "\n");     // delete first line
+            tp[i] = strtok(NULL, ",");   // get s
+        }
         else
             tp[i] = strtok(NULL, ",");  // get data
     }
 
     /* check start signal */
-    if (c[0] == 's')
+    if (!strcmp(tp[0], "s"))
     {
         for (int i = 0; i < data_size_rx; ++i)
         {

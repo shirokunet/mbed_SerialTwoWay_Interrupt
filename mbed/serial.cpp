@@ -50,5 +50,5 @@ void SerialTW::write(int data_tx[])
     {
         _pc->printf("%d,", data_tx[i]);
     }
-    _pc->printf("\r\n"); 
+    _pc->printf("\r\n");
 }
