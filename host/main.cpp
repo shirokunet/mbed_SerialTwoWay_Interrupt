@@ -7,7 +7,8 @@
 
 
 #define device "/dev/ttyACM0"
-#define data_size 3
+#define data_size_tx 3
+#define data_size_rx 6
 
 serial_t serial;
 
@@ -34,8 +35,8 @@ bool read(int data_rx[], int timeout_ms=10)
     snprintf(c, 128, "%s", buf);
 
     /* split */
-    char* tp[data_size+1];
-    for (int i = 0; i < data_size+1; ++i)
+    char* tp[data_size_rx+1];
+    for (int i = 0; i < data_size_rx+1; ++i)
     {
         if (i == 0)
             tp[i] = strtok(c, ",");     // get s
@@ -46,7 +47,7 @@ bool read(int data_rx[], int timeout_ms=10)
     /* check start signal */
     if (c[0] == 's')
     {
-        for (int i = 0; i < data_size; ++i)
+        for (int i = 0; i < data_size_rx; ++i)
         {
             data_rx[i] = atoi(tp[i+1]);
         }
@@ -54,7 +55,7 @@ bool read(int data_rx[], int timeout_ms=10)
 
     /* print rx data*/
     printf("rx: s,");
-    for (int i = 0; i < data_size; ++i)
+    for (int i = 0; i < data_size_rx; ++i)
         printf("%d,", data_rx[i]);
     printf("\n");
 
@@ -65,7 +66,7 @@ void write(int data_tx[])
 {
     unsigned char s[20] = "";
     unsigned char data_s[16] = "";
-    for (int i = 0; i < data_size; ++i)
+    for (int i = 0; i < data_size_tx; ++i)
     {
         unsigned char input[16];
         snprintf((char *)input, sizeof input, "%d,", data_tx[i]);
@@ -79,16 +80,20 @@ void write(int data_tx[])
 int main(void) {
     serial_open(&serial, device, 115200);
     
-    int data_tx[data_size] = {0}; 
-    int data_rx[data_size] = {0}; 
+    int data_tx[data_size_tx] = {0}; 
+    int data_rx[data_size_rx] = {0}; 
 
     write(data_tx);
     while(1)
     {
         data_tx[0]++;
         data_tx[1]--;
-        write(data_tx);
-        read(data_rx, 10);
+        try {
+            write(data_tx);
+            read(data_rx, 20);
+        }catch (char *str) {
+            printf("%s\n", str);
+        }
     }
 
     serial_close(&serial);

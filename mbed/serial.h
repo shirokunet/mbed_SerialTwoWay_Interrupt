@@ -3,7 +3,7 @@
 
 #include "mbed.h"
 
-#define _data_tx_size 5
+#define _data_tx_size 6
 #define _data_rx_size 3
 
 class SerialTW
